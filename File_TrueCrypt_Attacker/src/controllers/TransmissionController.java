@@ -40,8 +40,8 @@ import objects.PostKey;
 
 public class TransmissionController {
 
-    public static String ipAddress;
-    public static SSLContext sslcontex;
+    public static String ipAddress = "192.168.1.10:8080";
+    //public static SSLContext sslcontex;
 	
 	public static String sendToServer(List<PostKey> sending, String command) throws IOException, JSONException {
         // Add custom implementation, as needed.
@@ -49,10 +49,10 @@ public class TransmissionController {
         try {
             //HttpsURLConnection.setDefaultHostnameVerifier(new NullHostNameVerifier());
             //SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-            URL url = new URL("http://" + ipAddress + "/" + command);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             //HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
             //conn.setSSLSocketFactory(sslcontex.getSocketFactory());
+            URL url = new URL("http://" + ipAddress + "/" + command);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
             conn.setRequestMethod("POST");
@@ -85,13 +85,13 @@ public class TransmissionController {
             StringBuilder response = new StringBuilder();
             while ((line = rd.readLine()) != null) {
                 response.append(line);
-                response.append('\r');
+                //response.append('\r');
             }
             rd.close();
             String tester = response.toString();
             if (tester.equals(""))
                 tester = "Success";
-            System.out.println("POST RETURN VALUE : " + tester);
+            //System.out.println("POST RETURN VALUE : " + tester);
 
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 ret = tester;
@@ -126,12 +126,11 @@ public class TransmissionController {
 
         String url = "http://"+ipAddress+"/" + command;
 
-        URL obj = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
         //SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         //HttpsURLConnection con = (HttpsURLConnection)obj.openConnection();
         //con.setSSLSocketFactory(sslcontex.getSocketFactory());
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
         // optional default is GET
         con.setRequestMethod("GET");
@@ -182,7 +181,7 @@ public class TransmissionController {
 	//////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////
 	 
-	 public static void setCerts() throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+/*	 public static void setCerts() throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
 	        // Load CAs from an InputStream
 	// (could be from a resource or ByteArrayInputStream or ...)
 	        CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -214,5 +213,5 @@ public class TransmissionController {
 	// Create an SSLContext that uses our TrustManager
 	        sslcontex = SSLContext.getInstance("TLS");
 	        sslcontex.init(null, tmf.getTrustManagers(), null);
-	    }
+	    }*/
 }

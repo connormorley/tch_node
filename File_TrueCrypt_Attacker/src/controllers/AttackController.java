@@ -19,7 +19,7 @@ public class AttackController {
 	static LtA logA = new LogObject();
 	
 	// Initiate attack on specified file, Alpha version is set to predetermined numerical figure and test series
-	public static void attack(String filePath, int sequenceIdentifier) throws InterruptedException {
+	public static String attack(String filePath, int sequenceIdentifier) throws InterruptedException {
 		passwordMasterCounter = sequenceIdentifier * 500;
 		testingSet = generatePasswords();
 		ArrayList<ArrayList<Integer>> checkDebug = testingSet;
@@ -49,7 +49,7 @@ public class AttackController {
 					System.out.println("Password: " + password);
 				} else {
 					System.out.println("Correct Password: " + password);
-					System.exit(1);
+					return password;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -58,6 +58,7 @@ public class AttackController {
 			}
 			attempt++;
 		}
+		return "";
 	}
 
 	//From the generated password list retrieve the associated Integer array and translate into characters.
