@@ -20,7 +20,7 @@ public class JobPollThread {
 	
 	public static void pollJobs() throws JSONException, IOException, InterruptedException
 	{
-		getMac(); // Get unique identifier for the pc, this can be spoofed but in this case it's unlikely.
+		macAddress = getMac(); // Get unique identifier for the pc, this can be spoofed but in this case it's unlikely.
 		while(terminationSwitch == false)
 		{
 			

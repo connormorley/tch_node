@@ -23,11 +23,27 @@ public class CentralController {
 		attackID = getAttackID();
 		String filePath = getFile(); 
 		while(attackID == getAttackID())
-		{
+		{ 
 		int attackSequence = getAttackSequence();
-		AttackController.attack(filePath, attackSequence);
+		String res = AttackController.attack(filePath, attackSequence);
+		if(!res.equals(""))
+		{
+			System.out.println("The password is : " + res);
+			sendCorrectPassword(res);
+			attackID = 0;	//Informs server of retrieved password and sets attackID to 0 to terminate loop, awaits new attack in job poll.
 		}
 		}
+		}
+	}
+	
+	//Relay password back to server to inform client, terminate any other attacking nodes by setting attackRunning to false.
+	public static void sendCorrectPassword(String correctPassword) throws NumberFormatException, JSONException, IOException
+	{
+		ArrayList<PostKey> sending = new ArrayList<PostKey>();
+        sending.add(new PostKey("password", "test"));
+        sending.add(new PostKey("result", correctPassword));
+        TransmissionController.sendToServer(sending, "passwordFound");	    
+        return;
 	}
 	
 	public static int getAttackID() throws NumberFormatException, JSONException, IOException

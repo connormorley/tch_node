@@ -8,8 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.json.JSONException;
+
+import Threads.JobPollThread;
 import loggers.LogObject;
 import loggers.LtA;
+import objects.PostKey;
 
 public class AttackController {
 
@@ -21,9 +25,10 @@ public class AttackController {
 	// Initiate attack on specified file, Alpha version is set to predetermined numerical figure and test series
 	public static String attack(String filePath, int sequenceIdentifier) throws InterruptedException {
 		passwordMasterCounter = sequenceIdentifier * 500;
-		testingSet = generatePasswords();
+		testingSet = generatePasswords(); // Generates 5000 combinations to try per counter with default set.
 		ArrayList<ArrayList<Integer>> checkDebug = testingSet;
 		int attempt = 0;
+		int healthCounter = 0; //Trigger to prompt health check to server
 		if (filePath.contains("\\"))
 			filePath = filePath.replaceAll("'", "\\\'");
 		while (attempt != testingSet.size()) {
@@ -41,15 +46,19 @@ public class AttackController {
 			try {
 				//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
 				p = Runtime.getRuntime().exec(file + " /s /l x /v " + filePath + " /p " + password + " /q");
-				p = Runtime.getRuntime().exec("find \"Block\" X:\\\\");
-				Thread.sleep(150);
+				Thread.sleep(150); // I want this down to 50.... HOW!!!!!!
+				p = Runtime.getRuntime().exec("find \"Block\" x:\\\\");
+				//p = Runtime.getRuntime().exec("if exist x:\\\\ (echo \"success\")");
 				BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 				String output = stdError.readLine();
-				if (!output.equals("File not found - X:\\\\") || !output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
-					System.out.println("Password: " + password);
-				} else {
+				//if (!output.equals("File not found - X:\\\\") || !output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
+				//if (!output.equals("success")) {
+				if (output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
 					System.out.println("Correct Password: " + password);
+					p = Runtime.getRuntime().exec(file + " /q /dx"); //Dismount the file when finished if mounted successfully.
 					return password;
+				} else {
+					System.out.println("Password: " + password);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -57,8 +66,31 @@ public class AttackController {
 				e.printStackTrace();
 			}
 			attempt++;
+			healthCounter++;
+			if(healthCounter == 4)
+			{
+				try {
+					sendHealth();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			healthCounter = 0;
+			}
+			
 		}
-		return "";
+		return ""; // Add recovery return statement to signal to Central to ask for another attack set.
+	}
+	
+	public static void sendHealth() throws JSONException, IOException
+	{
+		ArrayList<PostKey> sending = new ArrayList<PostKey>();
+        sending.add(new PostKey("password", "test"));
+        sending.add(new PostKey("deviceid", JobPollThread.macAddress));
+        TransmissionController.sendToServer(sending, "healthCheck");
 	}
 
 	//From the generated password list retrieve the associated Integer array and translate into characters.
