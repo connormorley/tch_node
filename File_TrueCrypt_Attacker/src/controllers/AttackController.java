@@ -70,7 +70,9 @@ public class AttackController {
 			if(healthCounter == 4)
 			{
 				try {
-					sendHealth();
+					String hCheck = sendHealth();
+					if (!hCheck.equals(""))
+						return "";
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -85,12 +87,15 @@ public class AttackController {
 		return ""; // Add recovery return statement to signal to Central to ask for another attack set.
 	}
 	
-	public static void sendHealth() throws JSONException, IOException
+	public static String sendHealth() throws JSONException, IOException
 	{
 		ArrayList<PostKey> sending = new ArrayList<PostKey>();
         sending.add(new PostKey("password", "test"));
         sending.add(new PostKey("deviceid", JobPollThread.macAddress));
-        TransmissionController.sendToServer(sending, "healthCheck");
+        String hCheck = TransmissionController.sendToServer(sending, "healthCheck");
+        if(hCheck.equals("abort"))
+        	return "abort";
+        return "";
 	}
 
 	//From the generated password list retrieve the associated Integer array and translate into characters.

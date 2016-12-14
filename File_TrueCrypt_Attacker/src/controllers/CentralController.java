@@ -13,26 +13,25 @@ import objects.PostKey;
 
 public class CentralController {
 	
-	public static int attackID = 0;
+	public static int attackID = 1;
 
 	public static void main(String[] args) throws JSONException, IOException, InterruptedException
 	{
-		while(1 == 1)
-		{
-		JobPollThread.pollJobs();
-		attackID = getAttackID();
-		String filePath = getFile(); 
-		while(attackID == getAttackID())
-		{ 
-		int attackSequence = getAttackSequence();
-		String res = AttackController.attack(filePath, attackSequence);
-		if(!res.equals(""))
-		{
-			System.out.println("The password is : " + res);
-			sendCorrectPassword(res);
-			attackID = 0;	//Informs server of retrieved password and sets attackID to 0 to terminate loop, awaits new attack in job poll.
-		}
-		}
+		while (1 == 1) {
+			JobPollThread.pollJobs();
+			attackID = getAttackID();
+			String filePath = getFile();
+			while (attackID == getAttackID()) {
+				int attackSequence = getAttackSequence();
+				int something = attackID;
+				int somethingorother = getAttackID();
+				String res = AttackController.attack(filePath, attackSequence);
+				if (!res.equals("")) {
+					System.out.println("The password is : " + res);
+					sendCorrectPassword(res);
+					attackID = 1; // Informs server of retrieved password and sets attackID to 1 to terminate loop, awaits new attack in job poll.
+				}
+			}
 		}
 	}
 	
