@@ -40,7 +40,7 @@ import objects.PostKey;
 
 public class TransmissionController {
 
-    public static String ipAddress = "localhost:8080";
+    public static String ipAddress = "";
     //public static SSLContext sslcontex;
 	
 	public static String sendToServer(List<PostKey> sending, String command) throws IOException, JSONException {

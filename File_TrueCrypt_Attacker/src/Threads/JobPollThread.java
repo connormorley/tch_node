@@ -10,6 +10,7 @@ import java.util.Enumeration;
 
 import org.json.JSONException;
 
+import controllers.CentralController;
 import controllers.TransmissionController;
 import objects.PostKey;
 
@@ -17,10 +18,12 @@ public class JobPollThread {
 
 	public static boolean terminationSwitch = false; // I think this can be altered outside thread, will force loop termination and return.
 	public static String macAddress = "";
+	public static String interfaceID = "";
 	
-	public static void pollJobs() throws JSONException, IOException, InterruptedException
+	public static int pollJobs() throws JSONException, IOException, InterruptedException
 	{
 		macAddress = getMac(); // Get unique identifier for the pc, this can be spoofed but in this case it's unlikely.
+		int retRes = 0;
 		while(terminationSwitch == false)
 		{
 			
@@ -28,11 +31,14 @@ public class JobPollThread {
 	        sending.add(new PostKey("password", "test"));
 	        sending.add(new PostKey("deviceid", macAddress));
 	        String result = TransmissionController.sendToServer(sending, "attackCheck");
-	        if(result.equals("yes")) // If return from server is positive, indicating waiting job, break loop and start analysis or something
-	        	break;
+	        if(!result.equals("no") && !result.equals(Integer.toString(CentralController.ignoreID))) // If return from server is positive, indicating waiting job, break loop and start analysis or something
+	        	{
+	        		retRes = Integer.parseInt(result);
+	        		break;
+	        	}
 	        Thread.currentThread().sleep(5000); // Poll every 5 seconds, this can be an options in properties file or options panel.
 		}
-		return;
+		return retRes;
 	}
 	
 	private static String getMac() throws SocketException
@@ -48,11 +54,17 @@ public class JobPollThread {
         InetAddress ip;
         String macAddress = "";
         try {
-
-            ip = InetAddress.getLocalHost();
+        	
+        	//TESTING!!! - Allocation of the desired interface by use of its name, specified within properties
+          //ip = NetworkInterface.getByName("wlan1").getInetAddresses().nextElement();
+        	ip = NetworkInterface.getByName(interfaceID).getInetAddresses().nextElement();
+            System.out.println("Current IP address : " + ip.getHostAddress());
+            NetworkInterface network = NetworkInterface.getByName(interfaceID);
+        	
+/*            ip = InetAddress.getLocalHost();
             System.out.println("Current IP address : " + ip.getHostAddress());
 
-            NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+            NetworkInterface network = NetworkInterface.getByInetAddress(ip)*/;
 
             byte[] mac = network.getHardwareAddress();
 
@@ -64,11 +76,11 @@ public class JobPollThread {
             }
             System.out.println(sb.toString());
             macAddress = sb.toString();
-        } catch (UnknownHostException e) {
+        } /*catch (UnknownHostException e) {
 
             e.printStackTrace();
 
-        } catch (SocketException e){
+        }*/ catch (SocketException e){
 
             e.printStackTrace();
 

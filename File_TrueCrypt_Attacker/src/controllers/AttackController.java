@@ -23,67 +23,142 @@ public class AttackController {
 	static LtA logA = new LogObject();
 	
 	// Initiate attack on specified file, Alpha version is set to predetermined numerical figure and test series
-	public static String attack(String filePath, int sequenceIdentifier) throws InterruptedException {
-		passwordMasterCounter = sequenceIdentifier * 500;
-		testingSet = generatePasswords(); // Generates 5000 combinations to try per counter with default set.
-		ArrayList<ArrayList<Integer>> checkDebug = testingSet;
-		int attempt = 0;
-		int healthCounter = 0; //Trigger to prompt health check to server
-		if (filePath.contains("\\"))
-			filePath = filePath.replaceAll("'", "\\\'");
-		while (attempt != testingSet.size()) {
-			String password = getPassword(attempt);
-			System.out.println(password);
-			if(password.contains("\""))
-				password = password.replaceAll("\"", "\\\\\"");
+	public static String attack(String filePath, int sequenceIdentifier, String attackMethod) throws InterruptedException {
+		if(attackMethod.equals("Brute Force"))
+		{
+			passwordMasterCounter = sequenceIdentifier * 500;
+			testingSet = generatePasswords(); // Generates 5000 combinations to try per counter with default set.
+			ArrayList<ArrayList<Integer>> checkDebug = testingSet;
+			int attempt = 0;
+			int healthCounter = 0; //Trigger to prompt health check to server
+			if (filePath.contains("\\"))
+				filePath = filePath.replaceAll("'", "\\\'");
+			while (attempt != testingSet.size()) {
+				String password = getPassword(attempt);
+				System.out.println(password);
+				if(password.contains("\""))
+					password = password.replaceAll("\"", "\\\\\"");
+				System.out.println(filePath);
+				Process p;
+				String file = "";
+				try {
+					if (System.getProperty("os.name").contains("Windows")) //If the host system in windows
+					{
+						file = ".\\truecrypt";
+						//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
+						p = Runtime.getRuntime().exec(file + " /s /l x /v " + filePath + " /p " + password + " /q");
+						Thread.sleep(150); // I want this down to 50.... HOW!!!!!!
+						p = Runtime.getRuntime().exec("find \"Block\" x:\\\\");
+						//p = Runtime.getRuntime().exec("if exist x:\\\\ (echo \"success\")");
+						BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+						String output = stdError.readLine();
+						//if (!output.equals("File not found - X:\\\\") || !output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
+						//if (!output.equals("success")) {
+						if (output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
+							System.out.println("Correct Password: " + password);
+							p = Runtime.getRuntime().exec(file + " /q /dx"); //Dismount the file when finished if mounted successfully.
+							return password;
+						} else {
+							System.out.println("Password: " + password);
+						}
+					}
+					else if (System.getProperty("os.name").contains("Linux")) //If the host system in LNX
+					{
+						file = "./truecrypt";
+						String command = "truecrypt " + filePath + " /media/tc -p=" + password + " -k= --protect-hidden=no --non-interactive -v --mount-options=nokernelcrypto";
+						p = Runtime.getRuntime().exec(command);
+						Thread.sleep(150); // I want this down to 50.... HOW!!!!!!
+						BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+						String output = stdError.readLine();
+						System.out.println(output);
+						if (output != null) { // Error output will differ depending on drive letter, this should be an option!
+							System.out.println("Password: " + password);
+						} else {
+							System.out.println("Correct Password: " + password);
+							p = Runtime.getRuntime().exec("truecrypt -d /media/tc"); //Dismount the file when finished if mounted successfully.
+							return password;
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (NullPointerException e) {
+					e.printStackTrace();
+				}
+				attempt++;
+				healthCounter++;
+				if(healthCounter == 4)
+				{
+					try {
+						String hCheck = sendHealth();
+						if (!hCheck.equals(""))
+							return "";
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				healthCounter = 0;
+				}
+				
+			}
+		}
+		else if(attackMethod.equals("Dictionary"))
+		{
+			ArrayList<String> wordList = DatabaseController.getAttackSequence(sequenceIdentifier);
+			if(wordList.isEmpty())
+				return "wordlistIsEmptyubhrgqrng[qeophmnboqwiptn230i7u24-024jh[q456jh2i05yj98246jyh902348yhj058j2-q89";
 			Process p;
 			String file = "";
-			if (System.getProperty("os.name").contains("Windows"))
-				file = ".\\truecrypt";
-			if (System.getProperty("os.name").contains("Linux"))
-				file = "./truecrypt";
-			System.out.println(filePath);
+			for(String password : wordList)
+			{
 			try {
-				//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
-				p = Runtime.getRuntime().exec(file + " /s /l x /v " + filePath + " /p " + password + " /q");
-				Thread.sleep(150); // I want this down to 50.... HOW!!!!!!
-				p = Runtime.getRuntime().exec("find \"Block\" x:\\\\");
-				//p = Runtime.getRuntime().exec("if exist x:\\\\ (echo \"success\")");
-				BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-				String output = stdError.readLine();
-				//if (!output.equals("File not found - X:\\\\") || !output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
-				//if (!output.equals("success")) {
-				if (output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
-					System.out.println("Correct Password: " + password);
-					p = Runtime.getRuntime().exec(file + " /q /dx"); //Dismount the file when finished if mounted successfully.
-					return password;
-				} else {
-					System.out.println("Password: " + password);
+				if (System.getProperty("os.name").contains("Windows")) //If the host system in windows
+				{
+					file = ".\\truecrypt";
+					//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
+					p = Runtime.getRuntime().exec(file + " /s /l x /v " + filePath + " /p " + password + " /q");
+					Thread.sleep(150); // I want this down to 50.... HOW!!!!!!
+					p = Runtime.getRuntime().exec("find \"Block\" x:\\\\");
+					//p = Runtime.getRuntime().exec("if exist x:\\\\ (echo \"success\")");
+					BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+					String output = stdError.readLine();
+					//if (!output.equals("File not found - X:\\\\") || !output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
+					//if (!output.equals("success")) {
+					if (output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
+						System.out.println("Correct Password: " + password);
+						p = Runtime.getRuntime().exec(file + " /q /dx"); //Dismount the file when finished if mounted successfully.
+						return password;
+					} else {
+						System.out.println("Password: " + password);
+					}
+				}
+				else if (System.getProperty("os.name").contains("Linux")) //If the host system in LNX
+				{
+					file = "./truecrypt";
+					String command = "truecrypt " + filePath + " /media/tc -p=" + password + " -k= --protect-hidden=no --non-interactive -v --mount-options=nokernelcrypto";
+					p = Runtime.getRuntime().exec(command);
+					Thread.sleep(150); // I want this down to 50.... HOW!!!!!!
+					BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+					String output = stdError.readLine();
+					System.out.println(output);
+					if (output != null) { // Error output will differ depending on drive letter, this should be an option!
+						System.out.println("Password: " + password);
+					} else {
+						System.out.println("Correct Password: " + password);
+						p = Runtime.getRuntime().exec("truecrypt -d /media/tc"); //Dismount the file when finished if mounted successfully.
+						return password;
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (NullPointerException e) {
 				e.printStackTrace();
 			}
-			attempt++;
-			healthCounter++;
-			if(healthCounter == 4)
-			{
-				try {
-					String hCheck = sendHealth();
-					if (!hCheck.equals(""))
-						return "";
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			healthCounter = 0;
 			}
-			
 		}
+		
 		return ""; // Add recovery return statement to signal to Central to ask for another attack set.
 	}
 	

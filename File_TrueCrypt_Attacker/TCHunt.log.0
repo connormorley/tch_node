@@ -1,0 +1,2 @@
+SEVERE 01-21-2017 20:47:46 || [SQL]Connection information issue, either driver or address : java.lang.ClassNotFoundException: com.mysql.jdbc.Driver
+SEVERE 01-21-2017 20:48:39 || [SQL]Connection information issue, either driver or address : com.mysql.jdbc.exceptions.MySQLSyntaxErrorException: Unknown database 'null'
