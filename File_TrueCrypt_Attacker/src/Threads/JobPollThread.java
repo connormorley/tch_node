@@ -30,13 +30,23 @@ public class JobPollThread {
 			ArrayList<PostKey> sending = new ArrayList<PostKey>();
 	        sending.add(new PostKey("password", "test"));
 	        sending.add(new PostKey("deviceid", macAddress));
+	        try{
 	        String result = TransmissionController.sendToServer(sending, "attackCheck");
-	        if(!result.equals("no") && !result.equals(Integer.toString(CentralController.ignoreID))) // If return from server is positive, indicating waiting job, break loop and start analysis or something
+	        /*if(!result.equals("no") && !result.equals(Integer.toString(CentralController.ignoreID))) // If return from server is positive, indicating waiting job, break loop and start analysis or something
 	        	{
 	        		retRes = Integer.parseInt(result);
 	        		break;
-	        	}
+	        	}*/
+	        if(!result.equals("no"))
+	        {
+	        	retRes = Integer.parseInt(result);
+        		break;
+	        }
 	        Thread.currentThread().sleep(5000); // Poll every 5 seconds, this can be an options in properties file or options panel.
+	        } catch(RuntimeException e)
+	        {
+	        	System.out.println("Connection error!");
+	        }
 		}
 		return retRes;
 	}

@@ -110,7 +110,8 @@ public class TransmissionController {
         } catch (IOException e) {
             System.out.println(e);
             System.out.println("io");
-            return "Invalid server input, please check the server address and try again.";
+            throw new RuntimeException();
+            //return "Invalid server input, please check the server address and try again.";
         } catch (Exception e) {
             System.out.println("say something");
             e.printStackTrace();

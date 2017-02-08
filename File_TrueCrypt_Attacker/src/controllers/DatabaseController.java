@@ -62,10 +62,10 @@ public static void execCustom(String query) {
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
-	public static ArrayList<String> getAttackSequence(int sequenceIdentifier) {
+	public static ArrayList<String> getAttackSequence(int arn, int balanceNumber) {
 		SQLConnect();
-		int min = 500 * sequenceIdentifier;
-		int max = 500 * (sequenceIdentifier + 1);
+		int min = balanceNumber * arn;
+		int max = balanceNumber * (arn + 1);
 		ArrayList<String> result = new ArrayList<String>();
 		try {
 			stmt = conn.createStatement();

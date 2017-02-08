@@ -1,8 +1,10 @@
 package controllers;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
@@ -20,11 +22,12 @@ import objects.PostKey;
 public class CentralController {
 	
 	public static int attackID = 1;
-	public static int ignoreID;
+	//public static int ignoreID;
 
 	public static void main(String[] args) throws JSONException, IOException, InterruptedException
 	{	
 		StartController.readSettingsFile();
+		speedTest();
 		while (1 == 1) {
 			attackID = JobPollThread.pollJobs();
 			//attackID = getAttackID();
@@ -32,16 +35,18 @@ public class CentralController {
 			//{
 			String filePath = getFile();
 			String attackMethod = getAttackMethod();
+			int balance = getBalanceNumber();
+			AttackController.balanceNumber = balance;
 			while (attackID == getAttackID()) {
-				int attackSequence = getAttackSequence();
+				int arn = getARN();
 				int something = attackID;
 				int somethingorother = getAttackID();
-				String res = AttackController.attack(filePath, attackSequence, attackMethod);
-				if(res.equals("wordlistIsEmptyubhrgqrng[qeophmnboqwiptn230i7u24-024jh[q456jh2i05yj98246jyh902348yhj058j2-q89"))
+				String res = AttackController.attack(filePath, arn, attackMethod);
+				if(res.equals("exhausted") && attackMethod.equals("Dictionary"))
 				{
 					System.out.println("Wordlist exhausted.");
 					wordlistExhausted();
-					ignoreID = attackID;
+					//ignoreID = attackID; //Sets the ignoreID to the current attackID, this means it will be ignored when returned as a result of running attack by the server.
 					attackID = 1;
 				}
 				else if (!res.equals("")) {
@@ -52,6 +57,78 @@ public class CentralController {
 			}
 			//}
 		}
+	}
+	
+	public static void speedTest() throws JSONException, IOException{
+		Process p;
+		String file = "";
+		long benchmark = 0;
+		try {
+			if (System.getProperty("os.name").contains("Windows")) //If the host system in windows
+			{
+				File speedTest = new File(".\\speedTest");
+				if(!speedTest.exists())
+				{
+					System.out.println("missing speed test file");
+					System.exit(0);
+				}
+				file = ".\\truecrypt";
+				//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
+				long startTime = System.currentTimeMillis();
+				p = Runtime.getRuntime().exec(file + " /s /l x /v .\\speedTest /p X /q");
+				Thread.sleep(150);
+				p = Runtime.getRuntime().exec("find \"Block\" x:\\\\");
+				//p = Runtime.getRuntime().exec("if exist x:\\\\ (echo \"success\")");
+				BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+				String output = stdError.readLine();
+				long endTime = System.currentTimeMillis();
+				benchmark = endTime - startTime;
+				System.out.println("Benchmark : " + (endTime - startTime));
+				//if (!output.equals("File not found - X:\\\\") || !output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
+				//if (!output.equals("success")) {
+			}
+			else if (System.getProperty("os.name").contains("Linux")) //If the host system in LNX
+			{
+				File speedTest = new File("./speedTest");
+				if(!speedTest.exists())
+				{
+					System.out.println("missing speed test file");
+					System.exit(0);
+				}
+				file = "./truecrypt";
+				long startTime = System.currentTimeMillis();
+				String command = "truecrypt ./speedTest /media/tc -p=X -k= --protect-hidden=no --non-interactive -v --mount-options=nokernelcrypto";
+				p = Runtime.getRuntime().exec(command);
+				Thread.sleep(150); 
+				BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+				String output = stdError.readLine();
+				long endTime = System.currentTimeMillis();
+				benchmark = endTime - startTime;
+				System.out.println("Benchmark : " + (endTime - startTime));
+				//System.out.println(output);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("The benchmark throughput for this machine is : " + (60000 / benchmark));
+		benchmark = 60000 / benchmark;
+		ArrayList<PostKey> sending = new ArrayList<PostKey>();
+        sending.add(new PostKey("password", "test"));
+        sending.add(new PostKey("benchmark", Long.toString(benchmark)));
+        TransmissionController.sendToServer(sending, "issueBenchmark");
+	}
+	
+	public static int getBalanceNumber() throws NumberFormatException, JSONException, IOException
+	{
+		ArrayList<PostKey> sending = new ArrayList<PostKey>();
+        sending.add(new PostKey("password", "test"));
+        int balance = Integer.parseInt(TransmissionController.sendToServer(sending, "getBalance"));	    
+        return balance;
 	}
 	
 	public static void wordlistExhausted() throws NumberFormatException, JSONException, IOException
@@ -114,13 +191,13 @@ public class CentralController {
         return "testingTCFile";
 	}
 	
-	public static int getAttackSequence() throws NumberFormatException, JSONException, IOException
+	public static int getARN() throws NumberFormatException, JSONException, IOException
 	{
 		int ret = 0;
 		ArrayList<PostKey> sending = new ArrayList<PostKey>();
 		sending.add(new PostKey("deviceid", JobPollThread.macAddress));
         sending.add(new PostKey("password", "test"));
-        ret = Integer.parseInt(TransmissionController.sendToServer(sending, "getAttackSequence"));
+        ret = Integer.parseInt(TransmissionController.sendToServer(sending, "getARN"));
 		return ret;
 	}
 	
