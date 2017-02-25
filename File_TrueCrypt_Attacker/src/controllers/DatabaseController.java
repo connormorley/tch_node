@@ -35,7 +35,7 @@ public class DatabaseController {
     catch(Exception e)
     {
     	logA.doLog("SQL" , "[SQL]Connection information issue, either driver or address : " + e.toString(), "Critical");
-        //e.printStackTrace();
+        e.printStackTrace();
         throw new RuntimeException();
     }
   }
@@ -58,6 +58,26 @@ public static void execCustom(String query) {
 	
 
 }
+
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+
+	public static void removeARNCheck(int arn) {
+		SQLConnect();
+		try {
+			stmt = conn.createStatement();
+			String query = "delete from arn_sequences where arn = " + arn;
+			stmt.executeUpdate(query);
+		} catch (SQLException e) {
+			logA.doLog("SQL", "[SQL]Query error while retrieving custom dataset \nError is : " + e.toString(),
+					"Critical");
+			e.printStackTrace();
+			close();
+			throw new RuntimeException(e);
+		}
+		close();
+	}
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////

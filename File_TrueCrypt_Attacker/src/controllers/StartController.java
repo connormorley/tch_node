@@ -21,7 +21,6 @@ public class StartController {
 		if(System.getProperty("os.name").contains("Linux"))
 		file = new File("./settings.properties");
 		
-		
 		try {
 		InputStream input = new FileInputStream(file);
 		Properties prop = new Properties();
@@ -43,7 +42,6 @@ public class StartController {
 			System.out.println("Settings file is incorrect size, check options.");
 			System.exit(0);
 		}
-		
 		configureSettings();
 		return;
 	}
@@ -65,6 +63,7 @@ public class StartController {
     	}
     	catch(Exception e)
     	{
+    		System.out.println("SQL ERROR");
     		//logA.doLog("Start" , "[Start]There was an error with the SQL configuration or address, please confirm details.", "Critical");
     		throw new RuntimeException(e);
     	}

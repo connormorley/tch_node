@@ -24,6 +24,8 @@ public class JobPollThread {
 	{
 		macAddress = getMac(); // Get unique identifier for the pc, this can be spoofed but in this case it's unlikely.
 		int retRes = 0;
+		TransmissionController.jobCheck = true;
+		TransmissionController.firstFailedCheck = true;
 		while(terminationSwitch == false)
 		{
 			
@@ -43,11 +45,12 @@ public class JobPollThread {
         		break;
 	        }
 	        Thread.currentThread().sleep(5000); // Poll every 5 seconds, this can be an options in properties file or options panel.
-	        } catch(RuntimeException e)
+	        } catch(IOException e)
 	        {
 	        	System.out.println("Connection error!");
 	        }
 		}
+		TransmissionController.jobCheck = false;
 		return retRes;
 	}
 	

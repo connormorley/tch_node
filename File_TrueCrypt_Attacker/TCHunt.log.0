@@ -1,2 +1,45 @@
 SEVERE 01-21-2017 20:47:46 || [SQL]Connection information issue, either driver or address : java.lang.ClassNotFoundException: com.mysql.jdbc.Driver
 SEVERE 01-21-2017 20:48:39 || [SQL]Connection information issue, either driver or address : com.mysql.jdbc.exceptions.MySQLSyntaxErrorException: Unknown database 'null'
+SEVERE 02-11-2017 00:23:03 || [SQL]Query error while retrieving custom dataset 
+Error is : com.mysql.jdbc.exceptions.MySQLSyntaxErrorException: Table 'tcrunch_test.arn_sequqnces' doesn't exist
+SEVERE 02-13-2017 19:49:27 || [SQL]Connection information issue, either driver or address : com.mysql.jdbc.CommunicationsException: Communications link failure due to underlying exception: 
+
+** BEGIN NESTED EXCEPTION ** 
+
+java.net.ConnectException
+MESSAGE: Connection refused: connect
+
+STACKTRACE:
+
+java.net.ConnectException: Connection refused: connect
+	at java.net.DualStackPlainSocketImpl.connect0(Native Method)
+	at java.net.DualStackPlainSocketImpl.socketConnect(Unknown Source)
+	at java.net.AbstractPlainSocketImpl.doConnect(Unknown Source)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(Unknown Source)
+	at java.net.AbstractPlainSocketImpl.connect(Unknown Source)
+	at java.net.PlainSocketImpl.connect(Unknown Source)
+	at java.net.SocksSocketImpl.connect(Unknown Source)
+	at java.net.Socket.connect(Unknown Source)
+	at java.net.Socket.connect(Unknown Source)
+	at java.net.Socket.<init>(Unknown Source)
+	at java.net.Socket.<init>(Unknown Source)
+	at com.mysql.jdbc.StandardSocketFactory.connect(StandardSocketFactory.java:256)
+	at com.mysql.jdbc.MysqlIO.<init>(MysqlIO.java:271)
+	at com.mysql.jdbc.Connection.createNewIO(Connection.java:2771)
+	at com.mysql.jdbc.Connection.<init>(Connection.java:1555)
+	at com.mysql.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:285)
+	at java.sql.DriverManager.getConnection(Unknown Source)
+	at java.sql.DriverManager.getConnection(Unknown Source)
+	at controllers.DatabaseController.SQLConnect(DatabaseController.java:33)
+	at controllers.StartController.checkValidity(StartController.java:63)
+	at controllers.StartController.configureSettings(StartController.java:55)
+	at controllers.StartController.readSettingsFile(StartController.java:47)
+	at controllers.CentralController.main(CentralController.java:29)
+
+
+** END NESTED EXCEPTION **
+
+
+
+Last packet sent to the server was 0 ms ago.
+SEVERE 02-13-2017 21:10:27 || [SQL]Connection information issue, either driver or address : java.sql.SQLException: Access denied for user 'root'@'localhost' (using password: YES)

@@ -26,6 +26,7 @@ public class CentralController {
 
 	public static void main(String[] args) throws JSONException, IOException, InterruptedException
 	{	
+		System.out.println("System initiated");
 		StartController.readSettingsFile();
 		speedTest();
 		while (1 == 1) {
@@ -42,27 +43,40 @@ public class CentralController {
 				int something = attackID;
 				int somethingorother = getAttackID();
 				String res = AttackController.attack(filePath, arn, attackMethod);
-				if(res.equals("exhausted") && attackMethod.equals("Dictionary"))
+				if(res.equals("disconnect")) //If during a health check the server has been unreachable, cancel attack.
+				{
+					System.out.println("Server disconnect occured. Check server status and connection.");
+					attackID = 1;
+					break;
+				}
+				else if(res.equals("exhausted") && attackMethod.equals("Dictionary")) //If during dictionary attack wordlist is exhausted
 				{
 					System.out.println("Wordlist exhausted.");
 					wordlistExhausted();
 					//ignoreID = attackID; //Sets the ignoreID to the current attackID, this means it will be ignored when returned as a result of running attack by the server.
 					attackID = 1;
 				}
-				else if (!res.equals("")) {
+				else if (!res.equals("")) { //If during attack the correct password is found (which is an unknown output)
 					System.out.println("The password is : " + res);
 					sendCorrectPassword(res);
 					attackID = 1; // Informs server of retrieved password and sets attackID to 1 to terminate loop, awaits new attack in job poll.
 				}
+				DatabaseController.removeARNCheck(arn);
 			}
 			//}
 		}
 	}
 	
-	public static void speedTest() throws JSONException, IOException{
-		Process p;
+	public static void speedTest() throws JSONException, IOException, InterruptedException{
+		/*Process p;
 		String file = "";
 		long benchmark = 0;
+		//long endTime = 0;
+		//ArrayList<Long> times = new ArrayList<Long>();
+		long totalTime = 0;
+		int count = 0;
+		while( count != 20 )
+		{
 		try {
 			if (System.getProperty("os.name").contains("Windows")) //If the host system in windows
 			{
@@ -73,17 +87,21 @@ public class CentralController {
 					System.exit(0);
 				}
 				file = ".\\truecrypt";
-				//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
 				long startTime = System.currentTimeMillis();
+				//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
 				p = Runtime.getRuntime().exec(file + " /s /l x /v .\\speedTest /p X /q");
-				Thread.sleep(150);
+				BufferedReader stdError1 = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+				String output1 = stdError1.readLine();
+				//Thread.sleep(150);
 				p = Runtime.getRuntime().exec("find \"Block\" x:\\\\");
 				//p = Runtime.getRuntime().exec("if exist x:\\\\ (echo \"success\")");
 				BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 				String output = stdError.readLine();
 				long endTime = System.currentTimeMillis();
-				benchmark = endTime - startTime;
-				System.out.println("Benchmark : " + (endTime - startTime));
+				totalTime = totalTime + (endTime - startTime);
+				//times.add((endTime - startTime));
+				//benchmark = endTime - startTime;
+				//System.out.println("Response speed : " + (endTime - startTime));
 				//if (!output.equals("File not found - X:\\\\") || !output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
 				//if (!output.equals("success")) {
 			}
@@ -97,14 +115,16 @@ public class CentralController {
 				}
 				file = "./truecrypt";
 				long startTime = System.currentTimeMillis();
-				String command = "truecrypt ./speedTest /media/tc -p=X -k= --protect-hidden=no --non-interactive -v --mount-options=nokernelcrypto";
+				String command = "truecrypt ./speedTest /media/tc -p=X -k= --protect-hidden=no --non-interactive -v";
 				p = Runtime.getRuntime().exec(command);
-				Thread.sleep(150); 
+				//Thread.sleep(150); 
 				BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 				String output = stdError.readLine();
 				long endTime = System.currentTimeMillis();
-				benchmark = endTime - startTime;
-				System.out.println("Benchmark : " + (endTime - startTime));
+				totalTime = totalTime + (endTime - startTime);
+				//times.add((endTime - startTime));
+				//benchmark = endTime - startTime;
+				//System.out.println("Response speed : " + (endTime - startTime));
 				//System.out.println(output);
 			}
 		} catch (IOException e) {
@@ -115,8 +135,32 @@ public class CentralController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//benchmark = benchmark; // This addition is made for system usage variations, allows system to operate around attack procedure
+		count++;
+		}
+		//endTime = System.currentTimeMillis();
+		benchmark = ((totalTime / 20));*/
+		long benchmark = 0;
+		AttackController.speedTest = true;
+		AttackController.balanceNumber = 100;
+		System.out.println("Speed test start - ");
+		String res = AttackController.attack("speedTest", 0, "Brute Force");
+		AttackController.speedTest = false;
+		AttackController.balanceNumber = 0;
+		benchmark = (Long.parseLong(res) / 10);
+		//benchmark = (benchmark / 61);
+		System.out.println("Character list length : " + PasswordGenerator.masterCharSet.length );
+		System.out.println("Average response speed : " + (benchmark));
+		//benchmark = benchmark + (benchmark / 2);
+		//System.out.println("Benchmark : " + (benchmark));
+		//AttackController.stall = ((int)benchmark);
 		System.out.println("The benchmark throughput for this machine is : " + (60000 / benchmark));
 		benchmark = 60000 / benchmark;
+		if(benchmark < 35) //Anything lower than this and the system will trigger a downed node due to being too slow. Plus would cause excessive polling.
+		{
+			System.out.println("This system does not have sufficient throughput and cannot be used with this system.");
+			System.exit(0);
+		}
 		ArrayList<PostKey> sending = new ArrayList<PostKey>();
         sending.add(new PostKey("password", "test"));
         sending.add(new PostKey("benchmark", Long.toString(benchmark)));

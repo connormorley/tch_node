@@ -41,6 +41,8 @@ import objects.PostKey;
 public class TransmissionController {
 
     public static String ipAddress = "";
+    public static boolean jobCheck = false;
+    public static boolean firstFailedCheck = true;
     //public static SSLContext sslcontex;
 	
 	public static String sendToServer(List<PostKey> sending, String command) throws IOException, JSONException {
@@ -70,8 +72,6 @@ public class TransmissionController {
                 params.add(new BasicNameValuePair(inTransit.getKey(), inTransit.getValue()));
             }
 
-
-            System.out.println("here");
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
@@ -108,13 +108,35 @@ public class TransmissionController {
             System.out.println("url");
             return "Incorrect server address format, please check and try again.";
         } catch (IOException e) {
-            System.out.println(e);
-            System.out.println("io");
-            throw new RuntimeException();
+        	if(jobCheck)
+        	{
+        		if(firstFailedCheck)
+        		{
+        			System.out.println("Server has disconnected.");
+        			firstFailedCheck = false;
+        		}
+        		return "no";
+        	}
+        	if(command.equals("issueBenchmark"))
+        	{
+        		System.out.println("Server unavailable at boot, please check connection and re-try. \nTERMINATING");
+        		System.exit(0);
+        	}
+        	else
+        	{
+	            System.out.println(e);
+	            System.out.println("io");
+	            throw new IOException();
+        	}
             //return "Invalid server input, please check the server address and try again.";
         } catch (Exception e) {
             System.out.println("say something");
             e.printStackTrace();
+        }
+        if(jobCheck && !firstFailedCheck)
+        {
+        	firstFailedCheck = true;
+        	System.out.println("Server has connected.");
         }
         return ret;
     }
