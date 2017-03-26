@@ -1,4 +1,4 @@
-package controllers;
+	package controllers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -88,7 +88,7 @@ public class AttackController {
 					{
 						file = "./truecrypt";
 						//String command = "truecrypt " + filePath + " /media/tc -p=" + password + " -k= --protect-hidden=no --non-interactive -v --mount-options=nokernelcrypto";
-						String command = "truecrypt " + filePath + " /media/tc -p=\"" + password + "\" -k= --protect-hidden=no --non-interactive -v";
+						String command = "truecrypt -t " + filePath + " /media/tc -p=\"" + password + "\" -k= --protect-hidden=no --non-interactive -v";
 						p = Runtime.getRuntime().exec(command);
 						//Thread.sleep(stall); // I want this down to 50.... HOW!!!!!!
 						BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -212,7 +212,7 @@ public class AttackController {
 				else if (System.getProperty("os.name").contains("Linux")) //If the host system in LNX
 				{
 					file = "./truecrypt";
-					String command = "truecrypt " + filePath + " /media/tc -p=\"" + password + "\" -k= --protect-hidden=no --non-interactive -v";
+					String command = "truecrypt -t " + filePath + " /media/tc -p=\"" + password + "\" -k= --protect-hidden=no --non-interactive -v";
 					p = Runtime.getRuntime().exec(command);
 					//Thread.sleep(stall); // I want this down to 50.... HOW!!!!!!
 					BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));

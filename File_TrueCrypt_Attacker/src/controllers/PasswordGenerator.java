@@ -124,7 +124,7 @@ public class PasswordGenerator {
 								int tally = passwordsUsed / limit; // Find divisible value ignoring remainders, result is how many runs in that column
 								passwordsUsed = passwordsUsed - (tally * limit);
 								//if(columnCount < 3)
-								columns.set(finalCounter, tally - 1); // First column (0) counted from limit first
+								columns.set(finalCounter, tally); // First column (0) counted from limit first
 								/*else
 									columns.set(finalCounter, tally - 1);*/
 								System.out.println(tally);

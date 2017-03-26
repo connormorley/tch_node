@@ -40,6 +40,8 @@ public class CentralController {
 			AttackController.balanceNumber = balance;
 			while (attackID == getAttackID()) {
 				int arn = getARN();
+				if(arn == -1)
+					break;
 				int something = attackID;
 				int somethingorother = getAttackID();
 				String res = AttackController.attack(filePath, arn, attackMethod);
@@ -68,78 +70,6 @@ public class CentralController {
 	}
 	
 	public static void speedTest() throws JSONException, IOException, InterruptedException{
-		/*Process p;
-		String file = "";
-		long benchmark = 0;
-		//long endTime = 0;
-		//ArrayList<Long> times = new ArrayList<Long>();
-		long totalTime = 0;
-		int count = 0;
-		while( count != 20 )
-		{
-		try {
-			if (System.getProperty("os.name").contains("Windows")) //If the host system in windows
-			{
-				File speedTest = new File(".\\speedTest");
-				if(!speedTest.exists())
-				{
-					System.out.println("missing speed test file");
-					System.exit(0);
-				}
-				file = ".\\truecrypt";
-				long startTime = System.currentTimeMillis();
-				//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
-				p = Runtime.getRuntime().exec(file + " /s /l x /v .\\speedTest /p X /q");
-				BufferedReader stdError1 = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-				String output1 = stdError1.readLine();
-				//Thread.sleep(150);
-				p = Runtime.getRuntime().exec("find \"Block\" x:\\\\");
-				//p = Runtime.getRuntime().exec("if exist x:\\\\ (echo \"success\")");
-				BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-				String output = stdError.readLine();
-				long endTime = System.currentTimeMillis();
-				totalTime = totalTime + (endTime - startTime);
-				//times.add((endTime - startTime));
-				//benchmark = endTime - startTime;
-				//System.out.println("Response speed : " + (endTime - startTime));
-				//if (!output.equals("File not found - X:\\\\") || !output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
-				//if (!output.equals("success")) {
-			}
-			else if (System.getProperty("os.name").contains("Linux")) //If the host system in LNX
-			{
-				File speedTest = new File("./speedTest");
-				if(!speedTest.exists())
-				{
-					System.out.println("missing speed test file");
-					System.exit(0);
-				}
-				file = "./truecrypt";
-				long startTime = System.currentTimeMillis();
-				String command = "truecrypt ./speedTest /media/tc -p=X -k= --protect-hidden=no --non-interactive -v";
-				p = Runtime.getRuntime().exec(command);
-				//Thread.sleep(150); 
-				BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-				String output = stdError.readLine();
-				long endTime = System.currentTimeMillis();
-				totalTime = totalTime + (endTime - startTime);
-				//times.add((endTime - startTime));
-				//benchmark = endTime - startTime;
-				//System.out.println("Response speed : " + (endTime - startTime));
-				//System.out.println(output);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//benchmark = benchmark; // This addition is made for system usage variations, allows system to operate around attack procedure
-		count++;
-		}
-		//endTime = System.currentTimeMillis();
-		benchmark = ((totalTime / 20));*/
 		long benchmark = 0;
 		AttackController.speedTest = true;
 		AttackController.balanceNumber = 100;
