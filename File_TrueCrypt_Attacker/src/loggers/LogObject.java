@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/*
-* Create by: 	Connor Morley
-* Date: 		April 2016
-* Title: 		Error Scraper Application
-* Version:		1.0
-*/
+/*	Created by:		Connor Morley
+ * 	Title:			Default Logger Level Control
+ *  Version update:	1.5
+ *  Notes:			Class is used to control which log level particular messages are logged as. These log levels correspond to that 
+ *  				configured within the log handler. This class implements the log object class LtA. This class is identical across
+ *  				all system components.
+ *  
+ *  References:		N/A
+ */
 
 public class LogObject implements LtA {
 	@Override

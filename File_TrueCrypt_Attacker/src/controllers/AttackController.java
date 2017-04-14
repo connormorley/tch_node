@@ -15,6 +15,17 @@ import loggers.LogObject;
 import loggers.LtA;
 import objects.PostKey;
 
+/*	Created by:		Connor Morley
+ * 	Title:			TCrunch Node Attack Controller
+ *  Version update:	2.4
+ *  Notes:			Class controls the attack operation of the node, depending on attack method either creates password range from ARN
+ *  				or retrieves password range from associated DB wordlist. Cycles all passwords in ARN sequqnce against file fragment
+ *  				and either generates a positive results (ending attack) or runs out of passwords in sequqnce resutling in cycling a 
+ *  				ARN request. 
+ *  
+ *  References:		N/A
+ */
+
 public class AttackController {
 
 	public static int passwordMasterCounter = 0;
@@ -25,16 +36,14 @@ public class AttackController {
 	static long startTime = 0;
 	static long endTime = 0;
 	static long totalTime= 0;
-	//public static int stall = 150;
 	
 	// Initiate attack on specified file, Alpha version is set to predetermined numerical figure and test series
 	public static String attack(String filePath, int sequenceIdentifier, String attackMethod) throws InterruptedException {
 		System.out.println("Balance number for attack is : " + balanceNumber);
 		if(attackMethod.equals("Brute Force"))
 		{
-			//balanceNumber= 120; // This number should control how many passwords are generated, this number times by 10.
 			passwordMasterCounter = sequenceIdentifier;
-			testingSet = PasswordGenerator.generatePasswords(); // Generates 5000 combinations to try per counter with default set.
+			testingSet = PasswordGenerator.generatePasswords();
 			ArrayList<ArrayList<Integer>> checkDebug = testingSet;
 			int attempt = 0;
 			int healthCounter = 0; //Trigger to prompt health check to server
@@ -54,29 +63,20 @@ public class AttackController {
 				Process p;
 				String file = "";
 				try {
-					if (System.getProperty("os.name").contains("Windows")) //If the host system in windows
+					if (System.getProperty("os.name").contains("Windows")) //If the host system is windows
 					{
 						file = ".\\truecrypt.exe";
-						//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
 						p = Runtime.getRuntime().exec(file + " /s /l x /v " + filePath + " /p\"" + password + "\" /q");
 						BufferedReader stdError1 = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 						String output1 = stdError1.readLine();
-						//Thread.sleep(stall); // I want this down to 50.... HOW!!!!!!
 						p = Runtime.getRuntime().exec("find \"Block\" x:\\\\");
-						//p = Runtime.getRuntime().exec("if exist x:\\\\ (echo \"success\")");
 						BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 						String output = stdError.readLine();
-						//if (!output.equals("File not found - X:\\\\") || !output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
-						//if (!output.equals("success")) {
 						if(password.contains("\\\\\"")) // Replace all quotations with excepted quotations
 							password = password.replaceAll("\\\\\"", "\"");
 						if(password.contains("\\\\\\\\")) // Replace all forward slashes with excepted forward slashes
 							password = password.replaceAll("\\\\\\\\", "\\\\");
 						if (output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
-							/*if(password.contains("\\\\\"")) // Replace all quotations with excepted quotations
-								password = password.replaceAll("\\\\\"", "\"");
-							if(password.contains("\\\\\\\\")) // Replace all forward slashes with excepted forward slashes
-								password = password.replaceAll("\\\\\\\\", "\\\\");*/
 							System.out.println("Correct Password: " + password);
 							p = Runtime.getRuntime().exec(file + " /q /dx"); //Dismount the file when finished if mounted successfully.
 							return password;
@@ -87,10 +87,8 @@ public class AttackController {
 					else if (System.getProperty("os.name").contains("Linux")) //If the host system in LNX
 					{
 						file = "./truecrypt";
-						//String command = "truecrypt " + filePath + " /media/tc -p=" + password + " -k= --protect-hidden=no --non-interactive -v --mount-options=nokernelcrypto";
 						String command = "truecrypt -t " + filePath + " /media/tc -p=\"" + password + "\" -k= --protect-hidden=no --non-interactive -v";
 						p = Runtime.getRuntime().exec(command);
-						//Thread.sleep(stall); // I want this down to 50.... HOW!!!!!!
 						BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 						String output = stdError.readLine();
 						System.out.println(output);
@@ -98,20 +96,12 @@ public class AttackController {
 							password = password.replaceAll("\\\\\"", "\"");
 						if(password.contains("\\\\\\\\")) // Replace all forward slashes with excepted forward slashes
 							password = password.replaceAll("\\\\\\\\", "\\\\");
-						if (output != null) { // Error output will differ depending on drive letter, this should be an option!
+						if (output != null) {
 							if(output.equals("Error: Failed to set up a loop device:")) {
-								/*if(password.contains("\\\\\"")) // Replace all quotations with excepted quotations
-									password = password.replaceAll("\\\\\"", "\"");
-								if(password.contains("\\\\\\\\")) // Replace all forward slashes with excepted forward slashes
-									password = password.replaceAll("\\\\\\\\", "\\\\");*/
 								System.out.println("Correct Password: " + password);
 								p = Runtime.getRuntime().exec("truecrypt -d /media/tc"); //Dismount the file when finished if mounted successfully.
 								return password;
 							} else if(output.contains("device-mapper: resume ioctl on")){
-								/*if(password.contains("\\\\\"")) // Replace all quotations with excepted quotations
-									password = password.replaceAll("\\\\\"", "\"");
-								if(password.contains("\\\\\\\\")) // Replace all forward slashes with excepted forward slashes
-									password = password.replaceAll("\\\\\\\\", "\\\\");*/
 								System.out.println("Correct Password: " + password);
 								p = Runtime.getRuntime().exec("truecrypt -d /media/tc"); //Dismount the file when finished if mounted successfully.
 								return password;
@@ -119,21 +109,10 @@ public class AttackController {
 							System.out.println("Password: " + password);
 						}
 						else {
-							/*if(password.contains("\\\\\"")) // Replace all quotations with excepted quotations
-								password = password.replaceAll("\\\\\"", "\"");
-							if(password.contains("\\\\\\\\")) // Replace all forward slashes with excepted forward slashes
-								password = password.replaceAll("\\\\\\\\", "\\\\");*/
 							System.out.println("Correct Password: " + password);
 							p = Runtime.getRuntime().exec("truecrypt -d /media/tc"); //Dismount the file when finished if mounted successfully.
 							return password;
 						}
-						/*if (output != null) { // Error output will differ depending on drive letter, this should be an option!
-							System.out.println("Password: " + password);
-						} else {
-							System.out.println("Correct Password: " + password);
-							p = Runtime.getRuntime().exec("truecrypt -d /media/tc"); //Dismount the file when finished if mounted successfully.
-							return password;
-						}*/
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -181,29 +160,20 @@ public class AttackController {
 				if(password.contains("\"")) // Replace all quotations with excepted quotations
 					password = password.replaceAll("\"", "\\\\\"");
 			try {
-				if (System.getProperty("os.name").contains("Windows")) //If the host system in windows
+				if (System.getProperty("os.name").contains("Windows")) //If the host system is windows
 				{
 					file = ".\\truecrypt.exe";
-					//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
 					p = Runtime.getRuntime().exec(file + " /s /l x /v " + filePath + " /p\"" + password + "\" /q");
 					BufferedReader stdError1 = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 					String output1 = stdError1.readLine();
-					//Thread.sleep(stall); // I want this down to 50.... HOW!!!!!!
 					p = Runtime.getRuntime().exec("find \"Block\" x:\\\\");
-					//p = Runtime.getRuntime().exec("if exist x:\\\\ (echo \"success\")");
 					BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 					String output = stdError.readLine();
-					//if (!output.equals("File not found - X:\\\\") || !output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
-					//if (!output.equals("success")) {
 					if(password.contains("\\\\\"")) // Replace all quotations with excepted quotations
 						password = password.replaceAll("\\\\\"", "\"");
 					if(password.contains("\\\\\\\\")) // Replace all forward slashes with excepted forward slashes
 						password = password.replaceAll("\\\\\\\\", "\\\\");
-					if (output.equals("Access denied - X:\\\\")) { // Error output will differ depending on drive letter, this should be an option!
-						/*if(password.contains("\\\\\"")) // Replace all quotations with excepted quotations
-							password = password.replaceAll("\\\\\"", "\"");
-						if(password.contains("\\\\\\\\")) // Replace all forward slashes with excepted forward slashes
-							password = password.replaceAll("\\\\\\\\", "\\\\");*/
+					if (output.equals("Access denied - X:\\\\")) {
 						System.out.println("Correct Password: " + password);
 						p = Runtime.getRuntime().exec(file + " /q /dx"); //Dismount the file when finished if mounted successfully.
 						return password;
@@ -216,7 +186,6 @@ public class AttackController {
 					file = "./truecrypt";
 					String command = "truecrypt -t " + filePath + " /media/tc -p=\"" + password + "\" -k= --protect-hidden=no --non-interactive -v";
 					p = Runtime.getRuntime().exec(command);
-					//Thread.sleep(stall); // I want this down to 50.... HOW!!!!!!
 					BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 					String output = stdError.readLine();
 					System.out.println(output);
@@ -224,7 +193,7 @@ public class AttackController {
 						password = password.replaceAll("\\\\\"", "\"");
 					if(password.contains("\\\\\\\\")) // Replace all forward slashes with excepted forward slashes
 						password = password.replaceAll("\\\\\\\\", "\\\\");
-					if (output != null) { // Error output will differ depending on drive letter, this should be an option!
+					if (output != null) {
 						if(output.equals("Error: Failed to set up a loop device:")) {
 							System.out.println("Correct Password: " + password);
 							p = Runtime.getRuntime().exec("truecrypt -d /media/tc"); //Dismount the file when finished if mounted successfully.
@@ -265,7 +234,7 @@ public class AttackController {
 			}
 		}
 		
-		return ""; // Add recovery return statement to signal to Central to ask for another attack set.
+		return "";
 	}
 	
 	public static String sendHealth() throws JSONException

@@ -1,12 +1,15 @@
 package objects;
 
-
-/**
- * Created by:  cmorley 10/10/2015
- * Description: This is an object class that is designed specifically to work with the ServerInteraction class as the key value pair. These objects will be funnelled to the class as a list which will then be
- *              broken down in order to create the desired key value pairs for the designated command within the server. This allows for reuse of the objects and the class for all purposes rather than one
- *              method/class for each interaction purpose.
+/*	Created by:		Connor Morley
+ * 	Title:			Default PostKey Object
+ *  Version update:	1.1
+ *  Notes:			This is an object class that is designed to work with the transmission control class. The object is essential a key and 
+ *  				value object which cooperates with the configuration within the transmission class. As the key and value are broken down
+ *  				within the transmission class, this object is reusable for all transmission purposes.
+ *  
+ *  References:		N/A
  */
+
 public class PostKey {
     final String key;
     final String value;

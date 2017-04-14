@@ -10,6 +10,16 @@ import java.util.Properties;
 
 import Threads.JobPollThread;
 
+/*	Created by:		Connor Morley
+ * 	Title:			TCrunch Node Start Controller
+ *  Version update:	2.0
+ *  Notes:			Class is used in conjunction with the system properties file for the applicaiton. Takes the user specified input of 
+ *  				the properties file and applies it to system components. Checks are also made that enough information is provided
+ *  				and that certain information provided is accurate.  
+ *  
+ *  References:		N/A
+ */
+
 public class StartController {
 	
 	private static Map<String, String> settings = new HashMap<String, String>();
@@ -34,7 +44,6 @@ public class StartController {
 		settings.put("mySQLPass", prop.getProperty("mySQL_Password"));
 		settings.put("InterfaceID", prop.getProperty("Interface_ID"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if(settings.size() != 8)
@@ -64,7 +73,6 @@ public class StartController {
     	catch(Exception e)
     	{
     		System.out.println("SQL ERROR");
-    		//logA.doLog("Start" , "[Start]There was an error with the SQL configuration or address, please confirm details.", "Critical");
     		throw new RuntimeException(e);
     	}
     }

@@ -12,16 +12,19 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-/*
-* Create by: 	Connor Morley
-* Date: 		April 2016
-* Title: 		Error Scraper Application
-* Version:		1.0
-*/
+/*	Created by:		Connor Morley
+ * 	Title:			Default Logger Handler
+ *  Version update:	1.5
+ *  Notes:			Class created to handle logging configuration and commands. Class is identical across all system components. Class has
+ *  				been included in order to support system logging, does not guarantee logging has been established throughout system
+ *  				appropriately. 
+ *  
+ *  References:		N/A
+ */
 
 public class LogHandler {
 
-	 private static String LOG_FILE_NAME = "TCHunt.log";
+	 private static String LOG_FILE_NAME = "TCrunchAttacker.log";
      static Hashtable<String, Logger> loggers = new Hashtable<String, Logger>();
      static FileHandler handler = null;
      public static int limit;
@@ -46,7 +49,6 @@ public class LogHandler {
                              + record.getMessage() + "\n";
                  }
              });
-             //handler.setFormatter(new SimpleFormatter());
          }
 
          Logger logger = Logger.getLogger(loggerName);

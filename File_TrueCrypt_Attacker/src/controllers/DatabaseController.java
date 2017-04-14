@@ -11,6 +11,14 @@ import java.util.Random;
 import loggers.LogObject;
 import loggers.LtA;
 
+/*	Created by:		Connor Morley
+ * 	Title:			TCrunch Node Database Interface Controller
+ *  Version update:	2.3
+ *  Notes:			Class is responsible for all interactions between the attack node and the established MySQL database. 
+ *  
+ *  References:		N/A
+ */
+
 public class DatabaseController {
 	
   private static String address = null;
@@ -20,15 +28,10 @@ public class DatabaseController {
   private static ResultSet res1 = null;
   public static Random random = new Random(System.currentTimeMillis());
   static LtA logA = new LogObject();
-
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
   
   public static void SQLConnect(){
     try {
-      // This will load the MySQL driver, each DB has its own driver
       Class.forName("com.mysql.jdbc.Driver");
-      // Setup the connection with the DB
       conn = DriverManager
           .getConnection(address);
     }
@@ -39,9 +42,6 @@ public class DatabaseController {
         throw new RuntimeException();
     }
   }
-
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
 
 public static void execCustom(String query) {
 	SQLConnect();
@@ -59,9 +59,6 @@ public static void execCustom(String query) {
 
 }
 
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-
 	public static void removeARNCheck(int arn) {
 		SQLConnect();
 		try {
@@ -77,10 +74,6 @@ public static void execCustom(String query) {
 		}
 		close();
 	}
-
-
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
 
 	public static ArrayList<String> getAttackSequence(int arn, int balanceNumber) {
 		SQLConnect();
@@ -106,9 +99,6 @@ public static void execCustom(String query) {
 
 	}
 
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-
   public static void close() {
     try {
       if (res != null) {
@@ -128,13 +118,9 @@ public static void execCustom(String query) {
     }
   }
   
-  
-  
   public static void setAddress(String submittedAddress)
   {
 	  address = submittedAddress;
   }
   
-  
-
 } 

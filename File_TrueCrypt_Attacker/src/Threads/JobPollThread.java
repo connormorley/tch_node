@@ -14,9 +14,20 @@ import controllers.CentralController;
 import controllers.TransmissionController;
 import objects.PostKey;
 
+/*	Created by:		Connor Morley
+ * 	Title:			Job Poll Thread
+ *  Version update:	2.3
+ *  Notes:			Initially a parallel thread, this class controls the polling of the control server by the attack node. The class
+ *  				identifies the nodes MAC and IP information and transmits this to the server when polling for attack jobs. This is 
+ *  				conducted periodically. If an error occurs appropriate action is taken either by this class or the transmission
+ *  				controller class to handle the issue gracefully or as expected.  
+ *  
+ *  References:		N/A
+ */
+
 public class JobPollThread {
 
-	public static boolean terminationSwitch = false; // I think this can be altered outside thread, will force loop termination and return.
+	public static boolean terminationSwitch = false;
 	public static String macAddress = "";
 	public static String interfaceID = "";
 	
@@ -34,11 +45,6 @@ public class JobPollThread {
 	        sending.add(new PostKey("deviceid", macAddress));
 	        try{
 	        String result = TransmissionController.sendToServer(sending, "attackCheck");
-	        /*if(!result.equals("no") && !result.equals(Integer.toString(CentralController.ignoreID))) // If return from server is positive, indicating waiting job, break loop and start analysis or something
-	        	{
-	        		retRes = Integer.parseInt(result);
-	        		break;
-	        	}*/
 	        if(!result.equals("no"))
 	        {
 	        	retRes = Integer.parseInt(result);
@@ -56,44 +62,21 @@ public class JobPollThread {
 	
 	private static String getMac() throws SocketException
 	{
-/*		String mac = "";
-		Enumeration<NetworkInterface> adapters = NetworkInterface.getNetworkInterfaces();
-        byte[] macBytes = adapters.nextElement().getHardwareAddress();
-        for (int k = 0; k < macBytes.length; k++) {
-           mac =  String.format("%02X%s", macBytes[k], (k < macBytes.length - 1) ? "-" : "");
-        }
-        return mac;
-        */
         InetAddress ip;
         String macAddress = "";
         try {
-        	
-        	//TESTING!!! - Allocation of the desired interface by use of its name, specified within properties
-          //ip = NetworkInterface.getByName("wlan1").getInetAddresses().nextElement();
         	ip = NetworkInterface.getByName(interfaceID).getInetAddresses().nextElement();
             System.out.println("Current IP address : " + ip.getHostAddress());
             NetworkInterface network = NetworkInterface.getByName(interfaceID);
-        	
-/*            ip = InetAddress.getLocalHost();
-            System.out.println("Current IP address : " + ip.getHostAddress());
-
-            NetworkInterface network = NetworkInterface.getByInetAddress(ip)*/;
-
             byte[] mac = network.getHardwareAddress();
-
             System.out.print("Current MAC address : ");
-
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < mac.length; i++) {
                 sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));        
             }
             System.out.println(sb.toString());
             macAddress = sb.toString();
-        } /*catch (UnknownHostException e) {
-
-            e.printStackTrace();
-
-        }*/ catch (SocketException e){
+        } catch (SocketException e){
 
             e.printStackTrace();
 

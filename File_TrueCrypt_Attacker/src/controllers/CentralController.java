@@ -19,10 +19,19 @@ import org.json.JSONException;
 import Threads.JobPollThread;
 import objects.PostKey;
 
+/*	Created by:		Connor Morley
+ * 	Title:			TCrunch Node Central Controller
+ *  Version update:	2.4
+ *  Notes:			Main class that involves application initiation. Class handles primary functions and is responsible for calling other
+ *  				functions. Class handles initiation of polling server, retrieving attack information and processing attack results
+ *  				appropriately.
+ *  
+ *  References:		http://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-java
+ */
+
 public class CentralController {
 	
 	public static int attackID = 1;
-	//public static int ignoreID;
 
 	public static void main(String[] args) throws JSONException, IOException, InterruptedException
 	{	
@@ -31,9 +40,6 @@ public class CentralController {
 		speedTest();
 		while (1 == 1) {
 			attackID = JobPollThread.pollJobs();
-			//attackID = getAttackID();
-			//if(attackID != ignoreID)
-			//{
 			String filePath = getFile();
 			String attackMethod = getAttackMethod();
 			int balance = getBalanceNumber();
@@ -55,7 +61,6 @@ public class CentralController {
 				{
 					System.out.println("Wordlist exhausted.");
 					wordlistExhausted();
-					//ignoreID = attackID; //Sets the ignoreID to the current attackID, this means it will be ignored when returned as a result of running attack by the server.
 					attackID = 1;
 				}
 				else if (!res.equals("")) { //If during attack the correct password is found (which is an unknown output)
@@ -78,12 +83,8 @@ public class CentralController {
 		AttackController.speedTest = false;
 		AttackController.balanceNumber = 0;
 		benchmark = (Long.parseLong(res) / 10);
-		//benchmark = (benchmark / 61);
 		System.out.println("Character list length : " + PasswordGenerator.masterCharSet.length );
 		System.out.println("Average response speed : " + (benchmark));
-		//benchmark = benchmark + (benchmark / 2);
-		//System.out.println("Benchmark : " + (benchmark));
-		//AttackController.stall = ((int)benchmark);
 		System.out.println("The benchmark throughput for this machine is : " + (60000 / benchmark));
 		benchmark = 60000 / benchmark;
 		if(benchmark < 35) //Anything lower than this and the system will trigger a downed node due to being too slow. Plus would cause excessive polling.
@@ -145,18 +146,17 @@ public class CentralController {
         sending.add(new PostKey("password", "test"));
         String byteString = TransmissionController.sendToServer(sending, "getJobBlock");
         
-        
+        // Hex to to character methodology source = http://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-java
 		int len = byteString.length();
-	    byte[] data = new byte[len / 2];
-	    for (int i = 0; i < len; i += 2) {
-	        data[i / 2] = (byte) ((Character.digit(byteString.charAt(i), 16) << 4)
-	                             + Character.digit(byteString.charAt(i+1), 16));
-	    }
-         
-	   // byte[] finalbytes = byteString.getBytes("ISO-8859-1");
-	    File outputFile = new File("testingTCFile");
+		byte[] data = new byte[len / 2];
+		for (int i = 0; i < len; i += 2) {
+			data[i / 2] = (byte) ((Character.digit(byteString.charAt(i), 16) << 4)
+					+ Character.digit(byteString.charAt(i + 1), 16));
+		}
+	    
+		File outputFile = new File("testingTCFile");
 	    try ( FileOutputStream outputStream = new FileOutputStream(outputFile); ) {
-	        outputStream.write(data, 0, data.length);  //write the bytes and your done. 
+	        outputStream.write(data, 0, data.length);
 	        outputStream.flush();
 	    } catch (Exception e) {
 	        e.printStackTrace();

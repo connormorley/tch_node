@@ -38,6 +38,18 @@ import org.json.JSONException;
 import objects.PostKey;
 
 
+/*	Created by:		Connor Morley
+ * 	Title:			TCrunch Node Transmissions Controller
+ *  Version update:	1.8
+ *  Notes:			Class is used to conduct communication via HTTPURL protocol between node and control server. Class is templated across
+ *  				all components within the system. Class conducts POST requests by default with timeout constraints. Return values are 
+ *  				checked and errors handles appropriately under special circumstances where expected. HTTPS controls have been included
+ *  				but commented in order for easy conversion in later versions. Further testing and configuration options will be required
+ *  				for this feature.
+ *  
+ *  References:		N/A
+ */
+
 public class TransmissionController {
 
     public static String ipAddress = "";
@@ -62,10 +74,7 @@ public class TransmissionController {
             conn.setDoOutput(true);
             conn.setUseCaches(false);
             conn.connect();
-
-
             List<NameValuePair> params = new ArrayList<NameValuePair>();
-
 
             for(PostKey inTransit : sending)
             {
@@ -85,13 +94,11 @@ public class TransmissionController {
             StringBuilder response = new StringBuilder();
             while ((line = rd.readLine()) != null) {
                 response.append(line);
-                //response.append('\r');
             }
             rd.close();
             String tester = response.toString();
             if (tester.equals(""))
                 tester = "Success";
-            //System.out.println("POST RETURN VALUE : " + tester);
 
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 ret = tester;
@@ -128,7 +135,6 @@ public class TransmissionController {
 	            System.out.println("io");
 	            throw new IOException();
         	}
-            //return "Invalid server input, please check the server address and try again.";
         } catch (Exception e) {
             System.out.println("say something");
             e.printStackTrace();
@@ -141,51 +147,35 @@ public class TransmissionController {
         return ret;
     }
 	
-	
-	//////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////
-	
 	public static String sendGet(String command) throws Exception {
-
         String url = "http://"+ipAddress+"/" + command;
-
         //SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         //HttpsURLConnection con = (HttpsURLConnection)obj.openConnection();
         //con.setSSLSocketFactory(sslcontex.getSocketFactory());
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-        // optional default is GET
         con.setRequestMethod("GET");
-
         int responseCode = con.getResponseCode();
         System.out.println("\nSending 'GET' request to URL : " + url);
         System.out.println("Response Code : " + responseCode);
-
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
-
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
         }
         in.close();
         String ret = response.toString();
-
         //print result
         System.out.println(response.toString());
         return ret;
 
     }
 	
-	//////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////
-	
 	 private static String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
 	        StringBuilder result = new StringBuilder();
 	        boolean first = true;
-
 	        for (NameValuePair pair : params) {
 	            if (first) {
 	                first = false;
@@ -197,7 +187,6 @@ public class TransmissionController {
 	            result.append("=");
 	            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
 	        }
-
 	        return result.toString();
 	    }
 	 

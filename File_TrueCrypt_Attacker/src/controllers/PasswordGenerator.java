@@ -2,10 +2,21 @@ package controllers;
 
 import java.util.ArrayList;
 
+/*	Created by:		Connor Morley
+ * 	Title:			TCrunch Node Brute Force Password Generator
+ *  Version update:	2.2
+ *  Notes:			Class is used when brute force attack operation is specified. ARN is used to calculate the attack sequence relating 
+ *  				to the established balance number of the attack. With these two pieces of information this class creates an array
+ *  				of passwords spanning the permutations of characters of the sequence specified.  
+ *  
+ *  References:		N/A
+ */
+
+
 public class PasswordGenerator {
 	public static char[] masterCharSet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`¨!\"£$%^&*()-_=+[{]};:'@#~,<.>/?\\|≈…Ê ".toCharArray();
 	public static boolean onlyOneColumn;
-	//From the generated password list retrieve the associated Integer array and translate into characters.
+
 		public static String getPassword(int position) {
 			String ret = "";
 			ArrayList<Integer> passwordSet = AttackController.testingSet.get(position);
@@ -20,26 +31,16 @@ public class PasswordGenerator {
 		public static ArrayList<ArrayList<Integer>> generatePasswords() {
 			System.out.println(masterCharSet.length);
 			ArrayList<ArrayList<Integer>> ret = new ArrayList<ArrayList<Integer>>();
-
 			int startPoint = AttackController.passwordMasterCounter * AttackController.balanceNumber; // Start value
-			//startPoint = startPoint / 98;
-
 			ArrayList<Integer> startArray = new ArrayList<Integer>();
 			startArray = getArrayPoint(startPoint);
-
 			int endPoint = (AttackController.passwordMasterCounter + 1) * AttackController.balanceNumber; // End value
-			//endPoint = endPoint / 98;
 			ArrayList<Integer> endArray = new ArrayList<Integer>();
 			endArray = getArrayPoint(endPoint);
-
 			ArrayList<Integer> test = new ArrayList<Integer>();
-
 			System.out.println(endArray.size());
-			
 			int counter = startArray.size() - 1;
-
 			while (!startArray.toString().equals(endArray.toString())) {
-
 				while (startArray.get(counter) != masterCharSet.length && !startArray.toString().equals(endArray.toString())) {
 					ArrayList<Integer> temp = new ArrayList<Integer>(startArray);
 					Integer testNumber = new Integer(ret.size());
@@ -47,7 +48,6 @@ public class PasswordGenerator {
 					ArrayList<ArrayList<Integer>> checkDebug = ret; // Adds the new integer sequence to the return array to be used for password sequence.
 					startArray.set(counter, startArray.get(counter) + 1); // Loops on the chose column (set by counter to start at 0) and then increments up to the designated value in the column
 				}
-				
 				if(startArray.toString().equals(endArray.toString()))
 						break;
 
@@ -55,7 +55,6 @@ public class PasswordGenerator {
 
 				if(counter == 0 && !onlyOneColumn)
 				{
-						//startArray.set(counter, startArray.get(counter) + 1);
 						counter++;
 						startArray.add(counter, 0);
 				}
@@ -75,17 +74,9 @@ public class PasswordGenerator {
 					}
 				}
 			}
-			
-			
-			
-			
-			
 			System.out.println("array size : " + ret.size());
 			return ret;
 		}
-		
-//////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
 
 		//From the masterKey number generate a Integer array, these are used as start and end points for the current numerical value.
 		private static ArrayList<Integer> getArrayPoint(int passwordsUsed) {
@@ -123,10 +114,7 @@ public class PasswordGenerator {
 							{
 								int tally = passwordsUsed / limit; // Find divisible value ignoring remainders, result is how many runs in that column
 								passwordsUsed = passwordsUsed - (tally * limit);
-								//if(columnCount < 3)
 								columns.set(finalCounter, tally); // First column (0) counted from limit first
-								/*else
-									columns.set(finalCounter, tally - 1);*/
 								System.out.println(tally);
 								finalCounter++; // Increment counter to next column
 								if (limit == (masterCharSet.length)) {
@@ -145,9 +133,6 @@ public class PasswordGenerator {
 
 						endReached = true; // Exit while loop
 					}
-
-					// Down here should be some sort of array relation to stored
-					// tally values to find appropriate characters from store
 				}
 				System.out.println(columns);
 			}
@@ -156,8 +141,6 @@ public class PasswordGenerator {
 				columns.set((columnCount - 1), (passwordsUsed));
 			}
 			return columns;
-			
-			
-			
+
 		}
 }
