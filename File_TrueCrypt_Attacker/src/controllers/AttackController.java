@@ -186,6 +186,8 @@ public class AttackController {
 					file = ".\\truecrypt.exe";
 					//This try block is the inclusion of the external TC executable that must be used as the interface when testing password
 					p = Runtime.getRuntime().exec(file + " /s /l x /v " + filePath + " /p\"" + password + "\" /q");
+					BufferedReader stdError1 = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+					String output1 = stdError1.readLine();
 					//Thread.sleep(stall); // I want this down to 50.... HOW!!!!!!
 					p = Runtime.getRuntime().exec("find \"Block\" x:\\\\");
 					//p = Runtime.getRuntime().exec("if exist x:\\\\ (echo \"success\")");
