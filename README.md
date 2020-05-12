@@ -18,4 +18,4 @@ On startup, the node will attempt a tiny password crack sequence to determine a 
 The file fragment being used to try and crack the password can be as small as 300KB even if the original container was 1TB in size. 
 
 # FULL RESEARCH PAPER
-TBA
+https://drive.google.com/file/d/1p2W0RYuNo1GthDc_53RPB1ZLBIufRINz/view?usp=sharing
