@@ -15,4 +15,4 @@ The system will extrapolate the designate password range from the server to dete
 
 On startup, the node will attempt a tiny password crack sequence to determine a baseline for password throughput. This is then relayed to the server in order to determine the heteregenous values the global system will work by. 
 
-The file fragment being used to try and crack the password can be as small as 512B even if the original container was 1TB in size. 
+The file fragment being used to try and crack the password can be as small as 300KB even if the original container was 1TB in size. 
